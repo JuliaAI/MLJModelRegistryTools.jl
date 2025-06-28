@@ -1,0 +1,21 @@
+name = "MLJModelRegistry"
+uuid = "0a96183e-380b-4aa6-be10-c555140810f2"
+authors = ["Anthony D. Blaom <anthony.blaom@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+
+[compat]
+Distributed = "1.11.0"
+Pkg = "1.11.0"
+Suppressor = "0.2"
+julia = "1.10"
+
+[extras]
+Suppressor = "fd094767-a336-5f1f-9728-57cf17d0bbfb"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test", "Suppressor"]
