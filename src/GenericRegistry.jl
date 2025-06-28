@@ -4,26 +4,27 @@
 
 Module providing basic tools to manage a *package registry*, by which is meant a package
 environment, together with "package metata", in the form of a dictionary of TOML-parsable
-values, keyed on the environment's package dependencies, which is stored in TOML file.
-This file is called Metadata.toml and lives in the environment file containing the
-environment Project.toml file. Not to be confused with a package registry in the sense of
-the standard library, `Pkg`.
+values, keyed on the environment's package dependencies, which is stored in a TOML file in
+the same directory as the Project.toml file for the environment.  This file is called
+Metadata.toml and lives in the environment file containing the environment Project.toml
+file. Not to be confused with a package registry in the sense of the standard library,
+`Pkg`.
 
 # Methods
 
-- [`GenericRegistry.dependencies(environment)`](@ref): Get a list of the environment's
+- `GenericRegistry.dependencies(environment)`: Get a list of the environment's
   dependencies (vector of package name strings).
 
 - [`GenericRegistry.run`](@ref): In a new Julia process, load a package (or packages) from
- the package environment and execute a Julia expression there; results are returnedn as
- `Future` objects to allow asynchronous `run` calls. Useful for generating metadata about
- a package.
+  the package environment and execute a Julia expression there; results are returned as
+  `Future` objects, to allow asynchronous `run` calls. Useful for generating metadata about
+  a package.
 
-- [`GenericRegistry.close(future)`](@ref): Shut down the process intitiated by the `run`
+- `GenericRegistry.close(future)`: Shut down the process intitiated by the `run`
   call that returned `future` (after calling `fetch(future)` to get the result of
   evaluation).
 
-- [`GenericRegisry.put`](@ref): Insert an item in the metadata dictionary
+- [`GenericRegistry.put`](@ref): Insert an item in the metadata dictionary
 
 - [`GenericRegistry.get`](@ref): Inspect the metadata
 
@@ -43,7 +44,7 @@ Pkg.status()
 #  [bd369af6] Tables v1.12.1
 
 Pkg.activate(temp=true)
-Pkg.add("MLJModels")
+Pkg.add("MLJModelRegistry")
 using MLJModels.GenericRegistry
 packages = GenericRegistry.dependencies(env)
 # 2-element Vector{String}:
@@ -117,7 +118,7 @@ end
 # # METHODS
 
 """
-    run(ex, pkgs[, environment])
+    GenericRegistry.run(ex, pkgs[, environment])
 
 In a temporary Julia process, evaluate the expression `ex` after importing the specified
 packages, `pkgs`, using an instantiated version of the specified package `environment`,
@@ -160,7 +161,7 @@ end
 close(future) = rmprocs(future.where)
 
 """
-    put(pkg, value, environment)
+    GenericRegistry.put(pkg, value, environment)
 
 In the metata dictionary associated with specified package environment, assign `value` to
 the key `pkg`.
@@ -178,7 +179,7 @@ function put(pkg, value, env)
 end
 
 """
-    get(pkg, environment)
+    GenericRegistry.get(pkg, environment)
 
 Return the metadata associated with package, `pkg`, if it is a dependency of `environment`
 and if `pkg` is a key in associated metadata dictionary. Otherwise, return `nothing`.
@@ -193,7 +194,7 @@ function get(pkg, env)
 end
 
 """
-    gc(environment)
+    GenericRegistry.gc(environment)
 
 Remove key-value pairs from the metadata dictionary associated with the specified
 `environment` in all cases in which the key is not a package dependency. An optional

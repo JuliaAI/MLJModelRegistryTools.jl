@@ -18,7 +18,7 @@ packages providing a machine learning toolbox. The MLJModelRegistry.jl has two f
   
 - It provides software tools for MLJ maintainers to manage the Model Registry, for example
   to add the models provided by a new machine learning package providing an MLJ model
-  interface.
+  interface for those models.
   
 This repository does not provide any MLJ user code but does contain metadata downloaded as
 a Julia `Artifact` by MLJ software. See the
