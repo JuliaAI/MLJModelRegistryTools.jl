@@ -1,0 +1,3 @@
+[deps]
+MLJDecisionTreeInterface = "c6f25543-311c-4c74-83dc-3ea6d1015661"
+NearestNeighborModels = "636a865e-7cf4-491e-846c-de09b730eb36"
