@@ -6,22 +6,13 @@ Module providing basic tools to manage a *package registry*, by which is meant a
 environment, together with "package metata", in the form of a dictionary of TOML-parsable
 values, keyed on the environment's package dependencies, which is stored in a TOML
 file. (This file is called Metadata.toml and is located in the same folder as environment
-Project.toml file.)re Not to be confused with a package registry in the sense of the
+Project.toml file.) Not to be confused with a package registry in the sense of the
 standard library, `Pkg`.
 
 # Methods
 
 - `GenericRegistry.dependencies(environment)`: Get a list of the environment's
   dependencies (vector of package name strings).
-
-- [`GenericRegistry.run`](@ref): In a new Julia process, load a package (or packages) from
-  the package environment and execute a Julia expression there; results are returned as
-  `Future` objects, to allow asynchronous `run` calls. Useful for generating metadata about
-  a package.
-
-- `GenericRegistry.close(future)`: Shut down the process intitiated by the `run`
-  call that returned `future` (after calling `fetch(future)` to get the result of
-  evaluation).
 
 - [`GenericRegistry.put`](@ref): Insert an item in the metadata dictionary
 
@@ -30,6 +21,14 @@ standard library, `Pkg`.
 - [`GenericRegistry.gc`](@ref): Remove key-value pairs fromn the metadata for package keys
   no longer dependencies in the environment. (In any case, `get` will return `nothing` for
   any `pkg` not currently a dependency.)
+
+- [`GenericRegistry.run`](@ref): In a new Julia process, load a package or packages and
+  execute a Julia expression there; results are returned as `Future` objects, to allow
+  asynchronous `run` calls. Useful for generating metadata about a package.
+
+- [`GenericRegistry.close(future)`](@ref): Shut down the process intitiated by the `run`
+  call that returned `future` (after calling `fetch(future)` to get the result of
+  evaluation).
 
 # Example
 
@@ -44,13 +43,13 @@ Pkg.status()
 
 Pkg.activate(temp=true)
 Pkg.add("MLJModelRegistry")
-using MLJModels.GenericRegistry
+using MLJModelRegistry.GenericRegistry
 packages = GenericRegistry.dependencies(env)
 # 2-element Vector{String}:
 #  "Tables"
 #  "Example"
 
-future = GenericRegistry.run(:(names(Tables)), ["Tables",], env)
+future = GenericRegistry.run(["Tables",], :(names(Tables)))
 value = fetch(future)
 # 3-element Vector{Symbol}:
 #  :Tables
@@ -59,8 +58,8 @@ value = fetch(future)
 
 GenericRegistry.close(future)
 GenericRegistry.put("Tables", string.(value), env)
-less("/Users/anthony/MyEnv/Metadata.toml")
-# Tables = ["Tables", "columntable", "rowtable"]
+read("/Users/anthony/MyEnv/Metadata.toml", String)
+# "Tables = [\"Tables\", \"columntable\", \"rowtable\"]\n"
 
 GenericRegistry.get("Tables", env)
 # 3-element Vector{String}:
@@ -77,11 +76,6 @@ import Pkg.TOML as TOML
 
 
 # # LOGGING
-
-err_missing_packages(pkgs) = ArgumentError(
-    "One or more of the following specified packages are not "*
-        "dependencies in the specified environment. "
-)
 
 err_invalid_package(pkg) = ArgumentError(
     "The package \"$pkg\" is an invalid key, as it is "*
@@ -117,32 +111,21 @@ end
 # # METHODS
 
 """
-    GenericRegistry.run(ex, pkgs[, environment])
+    GenericRegistry.run([setup,] packages, program)
 
-In a temporary Julia process, evaluate the expression `ex` after importing the specified
-packages, `pkgs`, using an instantiated version of the specified package `environment`,
-when specified. If `environment` is omitted, a fresh temporary environment is created, and
-populated by only the specified packages, before instantiation.
+In a temporary Julia process, and using a temporary package environment, do this:
+
+1. Evaluate the `setup` expression (if present).
+
+2. Add the specified `packages` to the environment, and instantiate.
+
+3. Evaluate the `program` expression.
 
 The returned value is a `Future` object which must be `fetch`ed to get the actual
 evaluated expression. Shut the temporary process down by calling `close` on the `Future`.
 
 """
-function run(ex, pkgs, env)
-    pkgs isa Vector || (pkgs = [pkgs,])
-    issubset(pkgs, dependencies(env)) || throw(err_missing_packages(pkgs))
-    imports =  [:(import $(Symbol(pkg))) for pkg in pkgs]
-    program = quote
-        using Pkg
-        Pkg.activate($env)
-        Pkg.instantiate()
-        $(imports...)
-        $ex
-    end
-    return run_in_temporary_process(program)
-end
-
-function run(ex, pkgs)
+function run(setup, pkgs, program)
     pkgs isa Vector || (pkgs = [pkgs,])
     additions = [:(Pkg.add($pkg)) for pkg in pkgs]
     imports =  [:(import $(Symbol(pkg))) for pkg in pkgs]
@@ -150,14 +133,22 @@ function run(ex, pkgs)
         using Pkg
         Pkg.activate(temp=true)
         $(additions...)
+        $setup
         Pkg.instantiate()
         $(imports...)
-        $ex
+        $program
     end
-    @show program
     return run_in_temporary_process(program)
 end
+run(pkgs, program) = run(:(), pkgs, program)
 
+"""
+    GenericRegistry.close(future)
+
+Shut down the Julia process whose output was encapsulated by the `Future` instance,
+`future`.
+
+"""
 close(future) = rmprocs(future.where)
 
 """

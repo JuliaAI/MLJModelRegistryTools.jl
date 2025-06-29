@@ -5,7 +5,8 @@ Home of the MLJ Model Registry
 # What's this repository for?
 
 [MLJ](https://juliaml.ai) (Machine Learning in Julia) is a suite of Julia software
-packages providing a machine learning toolbox. The MLJModelRegistry.jl has two functions: 
+packages providing a machine learning toolbox. The MLJModelRegistry.jl repository has two
+functions:
 
 - It hosts the *MLJ Model Registry*, a list of packages providing MLJ interfaces to
   machine learning algorithms, together with metadata about those models, such as the type

@@ -17,36 +17,27 @@ import MLJModelRegistry.GenericRegistry as R
     n = nprocs()
     @suppress begin
 
-        # invalid list of packages:
-        @test_throws(
-            R.err_missing_packages(["RoguePkg", "Tables"]),
-            R.run(:(nothing), ["RoguePkg", "Tables"], ENVIRONMENT),
-        )
-
         # bunch of runs:
-        future1 = R.run(:(names(Tables)), ["Tables",], ENVIRONMENT)
+        future1 = R.run(["Tables",], :(names(Tables)))
         future2 = R.run(
+            :(Pkg.add("Example")),
+            [],
             :(using Example; hello("Julia")),
-            ["Tables", "Pkg"],
-            ENVIRONMENT,
         )
-        future3 = R.run(:(names(Tables)), ["Tables",])
-        future4 = R.run(
+        future3 = R.run(
+            "Tables",
             :(using Example; hello("Julia")),
-            ["Tables", "Pkg"],
         )
 
         # fetch and test the outcomes
         @test issubset([:Tables, :columntable, :rowtable], fetch(future1))
         @test fetch(future2) == "Hello, Julia"
-        @test issubset([:Tables, :columntable, :rowtable], fetch(future3))
-        @test_throws(RemoteException, fetch(future4))
+        @test_throws(RemoteException, fetch(future3))
 
         # shutdown the `run` processes:
         R.close(future1)
         R.close(future2)
         R.close(future3)
-        R.close(future4)
     end
     @test nprocs() == n
 end
