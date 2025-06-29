@@ -1,6 +1,6 @@
-# MLJModelInterface.jl
+# MLJModelRegistry.jl
 
-Home of the MLJ Model Registry
+Home of the MLJ Model Registry and tools to maintain it
 
 # What's this repository for?
 
