@@ -4,11 +4,10 @@
 
 Module providing basic tools to manage a *package registry*, by which is meant a package
 environment, together with "package metata", in the form of a dictionary of TOML-parsable
-values, keyed on the environment's package dependencies, which is stored in a TOML file in
-the same directory as the Project.toml file for the environment.  This file is called
-Metadata.toml and lives in the environment file containing the environment Project.toml
-file. Not to be confused with a package registry in the sense of the standard library,
-`Pkg`.
+values, keyed on the environment's package dependencies, which is stored in a TOML
+file. (This file is called Metadata.toml and is located in the same folder as environment
+Project.toml file.)re Not to be confused with a package registry in the sense of the
+standard library, `Pkg`.
 
 # Methods
 
@@ -155,6 +154,7 @@ function run(ex, pkgs)
         $(imports...)
         $ex
     end
+    @show program
     return run_in_temporary_process(program)
 end
 
