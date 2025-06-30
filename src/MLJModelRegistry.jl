@@ -13,5 +13,6 @@ const REGISTRY = joinpath(ROOT, "registry")
 include("GenericRegistry.jl")
 include("check_traits.jl")
 include("remote_methods.jl")
+include("methods.jl")
 
 end # module
