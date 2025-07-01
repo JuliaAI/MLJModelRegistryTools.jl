@@ -1,9 +1,15 @@
 # Internals 
 
-This page contains privates method documentation for maintainers of the
-MLJModelRegistry.jl software tools.
+This page contains documentation for non-public API, for maintainers of
+MLJModelRegistry.jl.
 
 ```@autodocs
-Modules = [MLJModelRegistry, GenericRegistry]
+Modules = [GenericRegistry]
+```
+```@docs
+MLJModelRegistry.metadata
+MLJModelRegistry.encode_dic
+MLJModelRegistry.modeltype_given_constructor(modeltypes)
+MLJModelRegistry.traits_given_constructor_name
 ```
 

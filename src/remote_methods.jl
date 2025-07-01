@@ -47,12 +47,11 @@ Convert an arbitrary nested dictionary `d` into a nested dictionary whose leaf v
 all strings, suitable for writing to a TOML file (a poor man's serialization). The rules
 for converting leaves are:
 
-1. If it's a `Symbol`, preserve the colon, as in :x -> ":x"
+1. If it's a `Symbol`, preserve the colon, as in :x -> ":x".
 
-2. If it's an `AbstractString`, apply `string` function (e.g, to remove `SubString`s)
+2. If it's an `AbstractString`, apply `string` function (e.g, to remove `SubString`s).
 
-3. In all other cases, except `AbstractArray`s, wrap in single quotes, as in sum -> "`sum`"
-
+3. In all other cases, except `AbstractArray`s, wrap in single quotes, as in sum -> "`sum`".
 4. Replace any `#` character in the application of Rule 3 with `_` (to handle `gensym` names)
 
 5. For an `AbstractVector`, broadcast the preceding Rules over its elements.
@@ -75,10 +74,24 @@ function encode_dic(d::AbstractDict)
     return ret
 end
 
+api_pkg(M) = split(MLJModelInterface.load_path(M), '.') |> first
+
 
 # # REMOTE METHODS
 
-function traits_given_constructor_name()
+"""
+    MLJModelRegistry.traits_given_constructor_name(pkg; check_traits=true)
+
+Build and return a dictionary of model metadata as follows: The keys consist of the names
+of constructors of any `model` object subtyping `MLJModelInterface.Model` wherever the
+package providing the model implementation (assumed to be imported) is `pkg`. This is the
+package appearing as the root of `MLJModelInterface.load_path(model)`. The values are
+corresponding dictionaries of traits, keyed on trait name.
+
+Also, apply smoke tests to the associated trait definitions, assuming `check_traits=true`.
+
+"""
+function traits_given_constructor_name(pkg; check_traits=true)
 
     # Some explanation for the gymnamstics going on here: The model registry is actually
     # keyed on constructor names, not model type names, a change from the way the registry
@@ -88,8 +101,8 @@ function traits_given_constructor_name()
     # to grab are the model type names (we look for subtypes of `Model`) and we get the
     # constructors after, through the `constructor` trait. Only one
 
-    modeltypes = filter(finaltypes(MLJModelInterface.Model)) do T
-        !(isabstracttype(T))
+    modeltypes = filter(finaltypes(MLJModelInterface.Model)) do M
+        !(isabstracttype(M)) && api_pkg(M) == pkg
     end
     modeltype_given_constructor = MLJModelRegistry.modeltype_given_constructor(modeltypes)
     constructors = keys(modeltype_given_constructor) |> collect
@@ -98,10 +111,10 @@ function traits_given_constructor_name()
 
     for C in constructors
         M = modeltype_given_constructor[C]
-        check_traits(M)
+        check_traits && MLJModelRegistry.check_traits(M)
         constructor_name = split(string(C), '.') |> last
         traits = LittleDict{Symbol,Any}(trait => eval(:(MLJModelInterface.$trait))(M)
-        for trait in MLJModelInterface.MODEL_TRAITS)
+                                        for trait in MLJModelInterface.MODEL_TRAITS)
         traits[:name] = constructor_name
         traits_given_constructor_name[constructor_name] = traits
     end

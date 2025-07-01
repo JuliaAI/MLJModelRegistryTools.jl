@@ -13,6 +13,7 @@ makedocs(
     ),
     pages=[
         "Home" => "index.md",
+        "Registry management tools" => "registry_management_tools.md",
         "Internals" => "internals.md",
     ],
     sitename="MLJModelRegistry.jl",

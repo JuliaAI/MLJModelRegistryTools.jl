@@ -27,17 +27,6 @@ accessed in one of two ways:
 - By developers wishing to update the registry, but using software tools provided by the
   MLJModelRegistry.jl package, as described in this documentation.
   
-As it is for MLJ developers, none of the code provided in this repository is part of the
-standard MLJ distribution.
-
-## Contents
-
-- [Registering a new model](@ref)
-
-- [Updating metadata for existing models](@ref)
-
-- [Complete list of registry maintenance tools](@ref)
-
-- [Internals](@ref)
-
+As it is intended for MLJ developers only, none of the code provided in this repository is
+part of the standard MLJ distribution.
 
