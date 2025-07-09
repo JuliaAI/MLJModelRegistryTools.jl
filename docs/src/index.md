@@ -10,7 +10,7 @@ functions:
 
 - It hosts the *MLJ Model Registry*, a list of packages providing MLJ interfaces to
   machine learning algorithms, together with metadata about those models, such as the type
-  of data models can operate on.
+  of data models can operate on, and their document strings.
   
 - It provides software tools for MLJ maintainers to manage the Model Registry, for example
   to add the models provided by a new machine learning package providing an MLJ model

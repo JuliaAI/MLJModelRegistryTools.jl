@@ -7,15 +7,16 @@ Module providing methods for managing the MLJ Model Registry. To modify the regi
   repository](https://github.com/JuliaAI/MLJModelRegistry.jl)
 
 - Use Julia's package manager to add or remove items from the list of registered packages
-  in the environment "/registry/". If adding a new item, see the protocol below.
+  in the environment "/registry/", located in the root directory of your clone. If adding
+  a new item, see the protocol below.
 
 - In a fresh temporary environment, run `Pkg.develop("path_to_clone")` and `using
   MLJModelRegistry`.
 
-- To add or update the metadata associated with a package (compulsory for new packages)
-  run [`update(pkg)`](@ref)
+- To add or update the metadata associated with a package, run [`update(pkg)`](@ref).
 
-- To update the metadata for *all* packages in the registry, run [`update()`](@ref).
+- Alternatively, to update the metadata for *all* packages in the registry (optional but
+  recommended), run [`update()`](@ref).
 
 - When satisfied, commit your changes to the clone and make a pull request to the master
   MLJModelRegistry.jl repository.
@@ -23,9 +24,10 @@ Module providing methods for managing the MLJ Model Registry. To modify the regi
 !!! important
 
     Removing a package from the "/registry/" enviroment does not remove its metadata from
-    the Model Registry (from "/registry/Metatdata.toml"). Unless you later call `update()`
-    to update all package metadata (slow), you must call [`MLJModelRegistry.gc()`](@ref) to
-    specifically remove metadata for all orphaned packages (fast).
+    the Model Registry (i.e., from "/registry/Metatdata.toml"). Unless you later call
+    `update()` to update all package metadata (slow), you must call
+    [`MLJModelRegistry.gc()`](@ref) to specifically remove metadata for all orphaned
+    packages (fast).
 
 # Protocol for adding new packages to the registry environment
 

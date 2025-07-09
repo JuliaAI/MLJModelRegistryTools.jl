@@ -71,7 +71,7 @@ strings, and record it in the MLJ model registry (write it to
 `/registry/Metadata.toml`).
 
 Assumes `pkg` is already a dependency in the Julia enviroment defined at `/registry/`. See
-[`MLJModelRegistry`](@ref) for details on the registration process.
+documentation for details on the registration process.
 
 ```julia-repl
 julia> update("MLJDecisionTreeInterface")

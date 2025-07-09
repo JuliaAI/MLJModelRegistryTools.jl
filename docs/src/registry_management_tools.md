@@ -9,8 +9,8 @@ MLJModelRegistry
 ## Methods
 
 - [`update`](@ref)
-- [`ModelRegistry.gc`](@ref)
-- [`ModelRegistry.get`](@ref)
+- [`MLJModelRegistry.gc`](@ref)
+- [`MLJModelRegistry.get`](@ref)
 
 ```@docs
 update
