@@ -88,6 +88,9 @@ package providing the model implementation (assumed to be imported) is `pkg`. Th
 package appearing as the root of `MLJModelInterface.load_path(model)`. The values are
 corresponding dictionaries of traits, keyed on trait name.
 
+Poor man's serialization, as provided by [`MLJRegistry.encode_dic`)(@ref), is applied to
+the dictionary, to make it suitable for writing to TOML files.
+
 Also, apply smoke tests to the associated trait definitions, assuming `check_traits=true`.
 
 """

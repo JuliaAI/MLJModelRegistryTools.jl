@@ -111,36 +111,74 @@ end
 # # METHODS
 
 """
-    GenericRegistry.run([setup,] packages, program)
+    GenericRegistry.run([setup,] packages, program; environment=nothing)
 
-In a temporary Julia process, and using a temporary package environment, do this:
+Assuming a package `environment` path is specified, do the following in a new Julia
+process:
 
-1. Evaluate the `setup` expression (if present).
+1.Activate `environment`.
 
-2. Add the specified `packages` to the environment, and instantiate.
+2. Evaluate the `setup` expression, if specified.
+
+3. Instantiate the environment.
+
+4. `import` all packages specified in `packages`.
 
 3. Evaluate the `program` expression.
 
-The returned value is a `Future` object which must be `fetch`ed to get the actual
-evaluated expression. Shut the temporary process down by calling `close` on the `Future`.
+The returned value is a `Future` object which must be `fetch`ed to get the final evaluated
+expression. Shut the temporary process down by calling `GenericRegistry.close` on the
+`Future`.
+
+Step 3 might typically close by reversing any actions mutating the `environment`, but
+remember only the last evaluated expression is passed to the `Future`.
+
+If `environment` is unspecified, then a fresh temporary environment is activated, and the
+packages listed in `packages` are manually added between Steps 2 and 3 above.
 
 """
-function run(setup, pkgs, program)
+function run(setup, pkgs, program; environment=nothing)
     pkgs isa Vector || (pkgs = [pkgs,])
-    additions = [:(Pkg.add($pkg)) for pkg in pkgs]
     imports =  [:(import $(Symbol(pkg))) for pkg in pkgs]
-    program = quote
+    ex = quote
         using Pkg
-        Pkg.activate(temp=true)
-        $(additions...)
-        $setup
-        Pkg.instantiate()
-        $(imports...)
-        $program
     end
-    return run_in_temporary_process(program)
+    if isnothing(environment)
+        push!(
+            ex.args,
+            quote
+                Pkg.activate(temp=true)
+            end,
+        )
+    else
+        push!(
+            ex.args,
+            quote
+                Pkg.activate($environment)
+            end,
+        )
+    end
+    push!(ex.args, quote $setup end)
+    if isnothing(environment)
+        additions = [:(Pkg.add($pkg)) for pkg in pkgs]
+        push!(
+            ex.args,
+            quote
+                $(additions...)
+            end,
+        )
+    end
+    push!(
+        ex.args,
+        quote
+            Pkg.instantiate()
+            $(imports...)
+            $program
+        end,
+    )
+    return run_in_temporary_process(ex)
 end
-run(pkgs, program) = run(:(), pkgs, program)
+run(pkgs, program; kwargs...) = run(:(), pkgs, program; kwargs...)
 
 """
     GenericRegistry.close(future)

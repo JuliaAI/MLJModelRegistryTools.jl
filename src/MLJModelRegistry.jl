@@ -15,19 +15,18 @@ Module providing methods for managing the MLJ Model Registry. To modify the regi
 
 - To add or update the metadata associated with a package, run [`update(pkg)`](@ref).
 
-- Alternatively, to update the metadata for *all* packages in the registry (optional but
-  recommended), run [`update()`](@ref).
+- Assuming this is successful, update the metadata for *all* packages in the registry
+  by running [`update()`](@ref).
 
 - When satisfied, commit your changes to the clone and make a pull request to the master
   MLJModelRegistry.jl repository.
 
-!!! important
+!!! note
 
     Removing a package from the "/registry/" enviroment does not remove its metadata from
-    the Model Registry (i.e., from "/registry/Metatdata.toml"). Unless you later call
-    `update()` to update all package metadata (slow), you must call
-    [`MLJModelRegistry.gc()`](@ref) to specifically remove metadata for all orphaned
-    packages (fast).
+    the Model Registry (i.e., from "/registry/Metatdata.toml"). However if you call
+    `update()` to update all package metadata (or call [`MLJModelRegistry.gc()`](@ref))
+    the metadata for all orphaned packages is removed.
 
 # Protocol for adding new packages to the registry environment
 
@@ -70,8 +69,14 @@ struct Quiet end
 # The MLJ Model Registry is a special case of a "generic model registry", as described in
 # this file, defining the `GenericRegistry` module (which has methods, no types):
 include("GenericRegistry.jl")
+
+# method to apply smoke tests to trait values for a model type:
 include("check_traits.jl")
+
+# methods called on remote processes to help extract metadata for a package's models:
 include("remote_methods.jl")
+
+# top-level methods for registry management:
 include("methods.jl")
 
 export update
