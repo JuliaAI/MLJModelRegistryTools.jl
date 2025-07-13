@@ -25,8 +25,30 @@ function clean!(dic, pkg)
     return dic
 end
 
+# develop MLJModelRegistry into the specifified `registry` project:
+function setup(registry)
+    ex = quote
+        # REMOVE THIS NEXT LINE AFTER TAGGING NEW MLJMODELINTERFACE
+        Pkg.develop(path="/Users/anthony/MLJ/MLJModelInterface/")
+        Pkg.develop(path=$ROOT) # MLJModelRegistry
+    end
+    future = GenericRegistry.run([], ex; environment=registry)
+    fetch(future)
+    GenericRegistry.close(future)
+end
+
+# remove MLJModelRegistry from the specifified `registry` project:
+function cleanup(registry)
+    ex = quote
+        Pkg.rm("MLJModelRegistry")
+    end
+    future = GenericRegistry.run([], ex; environment=registry)
+    fetch(future)
+    GenericRegistry.close(future)
+end
+
 """
-    metadata(pkg; manifest=true, check_traits=true)
+    metadata(pkg; registry="", check_traits=true)
 
 *Private method.*
 
@@ -34,25 +56,29 @@ Extract the metadata for a package. Returns a `Future` object that must be `fetc
 get the metadata. See, [`MLJModelRegistry.update`](@ref), which calls this method, for
 more details.
 
+Assumes that MLJModelRegistry has been `develop`ed into `registry` if this is non-empty.
+
 """
-function metadata(pkg; environment=nothing, check_traits=true)
-    if !isnothing(environment)
-        pkg in GenericRegistry.dependencies(environment) ||
-            throw(err_missing_package(pkg, environment))
-    end
-    setup = quote
-        # REMOVE THIS NEXT LINE AFTER TAGGING NEW MLJMODELINTERFACE
-        Pkg.develop(path="/Users/anthony/MLJ/MLJModelInterface/")
-        Pkg.develop(path=$ROOT)
+function metadata(pkg; registry="", check_traits=true)
+    if !isempty(registry)
+        pkg in GenericRegistry.dependencies(registry) ||
+            throw(err_missing_package(pkg, registry))
+        setup=()
+    else
+        setup = quote
+            # REMOVE THIS NEXT LINE AFTER TAGGING NEW MLJMODELINTERFACE
+            Pkg.develop(path="/Users/anthony/MLJ/MLJModelInterface/")
+            Pkg.develop(path=$ROOT) # MLJModelRegistry
+        end
     end
     program = quote
         import MLJModelRegistry
-        dic = MLJModelRegistry.traits_given_constructor_name(
+        MLJModelRegistry.traits_given_constructor_name(
             $pkg,
             check_traits=$check_traits,
         )
     end
-    return GenericRegistry.run(setup, pkg, program; environment)
+    return GenericRegistry.run(setup, pkg, program; environment=registry)
 end
 
 
@@ -67,7 +93,7 @@ registry.
 This is performed automatically after `update()`, but not after `update(pkg)`.
 
 """
-gc() = GenericRegistry.gc(REGISTRY)
+gc() = GenericRegistry.gc(registry_path())
 
 
 """
@@ -78,8 +104,9 @@ strings, and record this in the MLJ model registry (write it to
 `/registry/Metadata.toml`).
 
 Assumes `pkg` is already a dependency in the Julia environment defined at `/registry/` and
-uses the version of `pkg` consistent with the current environment manifest. See
-documentation for details on the registration process.
+uses the version of `pkg` consistent with the current environment manifest, after
+MLJModelRegistry.jl has been `develop`ed into that environment (it is removed again after
+the update). See documentation for details on the registration process.
 
 ```julia-repl
 julia> update("MLJDecisionTreeInterface")
@@ -87,8 +114,7 @@ julia> update("MLJDecisionTreeInterface")
 
 # Return value
 
-A set of all names of all models (more precisely, constructors) for which metadata was
-recorded.
+The metadata dictionary, keyed on models (more precisely, constructors, thereof).
 
 # Advanced options
 
@@ -96,10 +122,9 @@ recorded.
 
     Advanced options are intented primarily for diagnostic purposes.
 
-- `manifest=true`: Set to `false` to ignore the registry environment manifest (at
-  `/registry/Manifest.toml`) and instead add only the specified packages to a new
-  temporary environment. Useful to temporarily force latest versions if these are being
-  blocked by other packages.
+- `manifest=true`: Set to `false` to ignore the registry environment manifest and instead
+  add only the specified packages to a new temporary environment. Useful to temporarily
+  force latest versions if these are being blocked by other packages.
 
 - `debug=false`: Calling `update` opens a temporary Julia process to extract the trait
   metadata (see [`MLJModelRegistry.GenericRegistry.run`](@ref)). By default, this process
@@ -109,23 +134,26 @@ recorded.
 
 """
 function update(pkg; debug=false, manifest=true, check_traits=true)
-    environment = manifest ? REGISTRY : nothing
+    registry = manifest ? registry_path() : ""
     @info INFO_BE_PATIENT1
-    update(pkg, debug ? Loud() : Quiet(), environment, check_traits)
+    update(pkg, debug ? Loud() : Quiet(), registry, check_traits)
 end
-update(pkg, ::Loud, environment, check_traits) = _update(pkg, environment, check_traits)
-update(pkg, ::Quiet, environment, check_traits) =
-    @suppress _update(pkg, environment, check_traits)
-function _update(pkg, environment, check_traits)
-    future = MLJModelRegistry.metadata(pkg; environment, check_traits)
+update(pkg, ::Loud, registry, check_traits) = _update(pkg, true, registry, check_traits)
+update(pkg, ::Quiet, registry, check_traits) =
+    @suppress _update(pkg, false, registry, check_traits)
+function _update(pkg, debug, registry, check_traits)
+    isempty(registry) || setup(registry)
+    future = MLJModelRegistry.metadata(pkg; registry, check_traits)
     metadata = try
         fetch(future)
     catch excptn
+        isempty(registry) || cleanup(registry)
         debug || GenericRegistry.close(future)
         rethrow(excptn)
     end
-    GenericRegistry.close(future)
-    GenericRegistry.put(pkg, metadata, REGISTRY)
+    isempty(registry) || cleanup(registry)
+    debug || GenericRegistry.close(future)
+    GenericRegistry.put(pkg, metadata, registry_path())
 end
 
 """
@@ -147,8 +175,10 @@ A set of all names of all packages for which metadata was recorded.
   updates in parallel. Metadata is extracted in parallel, but written to file
   sequentially.
 
-- `debug=false`, `manifest=true`: These are applied as indicated above for each package
-  added.
+- `debug=false`: Set to `true` to leave temporary processes open; see the `update(pkg;
+  ...)` document string above.
+
+- `manifest=true`: See the `update(pkg; ...)` document string above.
 
 """
 function update(
@@ -158,15 +188,16 @@ function update(
     manifest=true,
     check_traits=true,
     )
-    environment = manifest ? REGISTRY : nothing
-    allpkgs = GenericRegistry.dependencies(REGISTRY)
-    if !isnothing(environment)
-        issubset(skip, allpkgs) || throw(err_invalid_packages(skip, environment))
+    registry = manifest ? registry_path() : ""
+    allpkgs = GenericRegistry.dependencies(registry_path())
+    if !isempty(registry)
+        issubset(skip, allpkgs) || throw(err_invalid_packages(skip, registry))
+        @suppress setup(registry)
     end
     pkgs = setdiff(allpkgs, skip)
     N = length(pkgs)
     pos = 1
-    @info "Processing $nworkers packages at a time. "
+    @info "Processing up to $nworkers packages at a time. "
     @info INFO_BE_PATIENT10
     while N ≥ 1
         print("\rPackages remaining: $N ")
@@ -174,19 +205,21 @@ function update(
         batch = pkgs[pos:pos + n - 1]
         @suppress begin
             futures =
-                [MLJModelRegistry.metadata(pkg; environment, check_traits) for pkg in batch]
+                [MLJModelRegistry.metadata(pkg; registry, check_traits) for pkg in batch]
             try
                 for (i, f) in enumerate(futures)
-                    GenericRegistry.put(batch[i], fetch(f), REGISTRY)
+                    GenericRegistry.put(batch[i], fetch(f), registry_path())
                 end
             catch excptn
+                isempty(registry) || cleanup(registry)
                 debug || GenericRegistry.close.(futures)
                 rethrow(excptn)
             end
-            GenericRegistry.close.(futures)
+            debug || GenericRegistry.close.(futures)
         end
         N -= n
     end
+    isempty(registry) || @suppress cleanup(registry)
     gc()
     println("\rPackages remaining: 0   ")
     return pkgs
@@ -200,4 +233,4 @@ Inspect the model trait metadata recorded in the Model Registry for those models
 see [`MLJModelRegistry.encode_dic`](@ref).
 
 """
-get(pkg) = GenericRegistry.get(pkg, REGISTRY)
+get(pkg) = GenericRegistry.get(pkg, registry_path())

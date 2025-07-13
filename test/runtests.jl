@@ -1,6 +1,7 @@
 using Test
 
 test_files = [
+    "setpath.jl",
     "GenericRegistry.jl",
     "remote_methods.jl",
     "methods.jl",

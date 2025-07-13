@@ -116,7 +116,7 @@ end
 Assuming a package `environment` path is specified, do the following in a new Julia
 process:
 
-1.Activate `environment`.
+1. Activate `environment`.
 
 2. Evaluate the `setup` expression, if specified.
 

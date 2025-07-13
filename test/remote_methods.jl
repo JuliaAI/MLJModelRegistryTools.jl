@@ -34,7 +34,7 @@ toml = joinpath(scratch_space, "dictionary.toml")
     @test MLJModels.decode_dic(d2) == d
 end
 
-struct Dummy <: Unsupervised end
+struct Dummy <: MLJModelInterface.Unsupervised end
 pkg = parentmodule(Dummy) |> string
 MLJModelInterface.load_path(::Type{<:Dummy}) = "$pkg.Dummy"
 
