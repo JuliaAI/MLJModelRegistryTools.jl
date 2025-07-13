@@ -1,14 +1,14 @@
 using Test
-using MLJModelRegistry
+using MLJModelRegistryTools
 using MLJModels
 using MLJModels.MLJModelInterface
 using Random
 import Pkg.TOML as TOML
 
-import MLJModelRegistry.encode_dic
+import MLJModelRegistryTools.encode_dic
 
 @testset "finaltypes" begin
-    types = MLJModelRegistry.finaltypes(Integer)
+    types = MLJModelRegistryTools.finaltypes(Integer)
     @test UInt8 in types
     @test !(Signed in types)
 end
@@ -39,15 +39,15 @@ pkg = parentmodule(Dummy) |> string
 MLJModelInterface.load_path(::Type{<:Dummy}) = "$pkg.Dummy"
 
 @testset "traits_given_constructor_name" begin
-    d = MLJModelRegistry.traits_given_constructor_name(pkg; check_traits=false)
+    d = MLJModelRegistryTools.traits_given_constructor_name(pkg; check_traits=false)
     traits = d["Dummy"]
     @test traits[":human_name"] == "dummy"
     # check that `check_traits=true` works:
     @test_logs(
         (:error, ),
         @test_throws(
-            MLJModelRegistry.err_bad_trait(Dummy),
-            MLJModelRegistry.traits_given_constructor_name(pkg)
+            MLJModelRegistryTools.err_bad_trait(Dummy),
+            MLJModelRegistryTools.traits_given_constructor_name(pkg)
         ),
     )
 end

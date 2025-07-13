@@ -1,4 +1,4 @@
-name = "MLJModelRegistry"
+name = "MLJModelRegistryTools"
 uuid = "0a96183e-380b-4aa6-be10-c555140810f2"
 authors = ["Anthony D. Blaom <anthony.blaom@gmail.com>"]
 version = "0.1.0"

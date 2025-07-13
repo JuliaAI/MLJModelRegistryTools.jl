@@ -80,7 +80,7 @@ api_pkg(M) = split(MLJModelInterface.load_path(M), '.') |> first
 # # REMOTE METHODS
 
 """
-    MLJModelRegistry.traits_given_constructor_name(pkg; check_traits=true)
+    MLJModelRegistryTools.traits_given_constructor_name(pkg; check_traits=true)
 
 Build and return a dictionary of model metadata as follows: The keys consist of the names
 of constructors of any `model` object subtyping `MLJModelInterface.Model` wherever the
@@ -107,14 +107,14 @@ function traits_given_constructor_name(pkg; check_traits=true)
     modeltypes = filter(finaltypes(MLJModelInterface.Model)) do M
         !(isabstracttype(M)) && api_pkg(M) == pkg
     end
-    modeltype_given_constructor = MLJModelRegistry.modeltype_given_constructor(modeltypes)
+    modeltype_given_constructor = MLJModelRegistryTools.modeltype_given_constructor(modeltypes)
     constructors = keys(modeltype_given_constructor) |> collect
     sort!(constructors, by=string)
     traits_given_constructor_name = Dict{String,Any}()
 
     for C in constructors
         M = modeltype_given_constructor[C]
-        check_traits && MLJModelRegistry.check_traits(M)
+        check_traits && MLJModelRegistryTools.check_traits(M)
         constructor_name = split(string(C), '.') |> last
         traits = LittleDict{Symbol,Any}(trait => eval(:(MLJModelInterface.$trait))(M)
                                         for trait in MLJModelInterface.MODEL_TRAITS)

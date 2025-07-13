@@ -1,26 +1,22 @@
 """
-    MLJModelRegistry
+    MLJModelRegistryTools
 
-Module providing methods for managing the MLJ Model Registry. To modify the registry:
-
-!!! important
-
-    In any pull request to update the Model Registry you should note the final output of
-    `Pkg.status(outdated=true)` when you have MLJModels/registry activated.
+Module providing tools for managing the MLJ Model Registry. To modify the registry:
 
 - Create a local clone of [MLJModels.jl](https://github.com/JuliaAI/MLJModels.jl), which
   hosts the registry. After making changes, you will be making a MLJModels.jl pull
   request.
 
-- Use Julia's package manager to add or remove items from the list of registered packages
-  in the environment "MLJModels/registry/". If adding a new item, see the protocol below.
+- If needed, use Julia's package manager to add or remove items from the list of
+  registered packages in the environment "/src/registry/", inside your MLJModels.jl
+  clone. Follow the protocol below.
 
-- After adding MLJModelRegistry to some other Julia pkg environment you have activated
-(e.g., a fresh temporary one) run `using MLJModelRegistry` to make the management tools
-available.
+- In a new Julia session with MLJModelRegistryTools.jl installed, run `using
+  MLJModelRegistryTools` to make the management tools available.
 
-- Point MLJModelRegistry to the location of the registry itself within your MLJModels.jl
-  clone, using `setpath(path_to_registry)`, as in `setpath("MyPkgs/MLJModels/registry")`.
+- Point the `MLJModelRegistryTools` module to the location of the registry itself within
+  your MLJModels.jl clone, using `setpath(path_to_registry)`, as in
+  `setpath("MyPkgs/MLJModels.jl/src/registry")`.
 
 - To add or update the metadata associated with a package, run [`update(pkg)`](@ref).
 
@@ -28,18 +24,16 @@ available.
   by running [`update()`](@ref).
 
 - When satisfied, commit your changes to the clone and make a pull request to the
-  MLJModelRegistry.jl repository that you cloned.
+  MLJModels.jl repository that you cloned.
 
-!!! note
+!!! important
 
-    Removing a package from the registry environment does not remove its metadata (i.e.,
-    from "/registry/Metatdata.toml"). However if you call `update()` to update all package
-    metadata (or call [`MLJModelRegistry.ac()`](@ref)) the metadata for all orphaned
-    packages is removed.
+    In any MLJModels.jl pull request to update the Model Registry you should note the
+    final output of `Pkg.status(outdated=true)` when you have /src/registry activated.
 
 # Protocol for adding new packages to the registry environment
 
-1. In your local clone of MLJModelRegistry.jl, `activate` the environment at  "/registry/".
+1. In your local clone of MLJModels.jl, `activate` the environment at  "/src/registry/".
 
 2. `update` the environment
 
@@ -49,12 +43,19 @@ available.
 
 4. Repeat steps 2 and 3 above, and investigate any dependency downgrades for which your addition may be the cause.
 
-If adding the new package results in downgrades to existing dependencies because your
+If adding the new package results in downgrades to existing dependencies, because your
 package is not up to date with it's compatibility bounds, then your pull request to
 register the new models may be rejected.
 
+!!! note
+
+    Removing a package from the registry environment does not remove its metadata. However
+    if you call `update()` to update all package metadata (or call
+    [`MLJModelRegistryTools.gc()`](@ref)) the metadata for all orphaned packages is
+    removed.
+
 """
-module MLJModelRegistry
+module MLJModelRegistryTools
 
 import MLJModelInterface
 using OrderedCollections

@@ -1,12 +1,12 @@
 using Documenter
-using MLJModelRegistry
+using MLJModelRegistryTools
 using DocumenterInterLinks
-using MLJModelRegistry.GenericRegistry
+using MLJModelRegistryTools.GenericRegistry
 
-const  REPO = Remotes.GitHub("JuliaAI", "MLJModelRegistry.jl")
+const  REPO = Remotes.GitHub("JuliaAI", "MLJModelRegistryTools.jl")
 
 makedocs(
-    modules=[MLJModelRegistry, GenericRegistry],
+    modules=[MLJModelRegistryTools, GenericRegistry],
     format=Documenter.HTML(
         prettyurls = true,
         collapselevel = 1,
@@ -16,13 +16,13 @@ makedocs(
         "Registry management tools" => "registry_management_tools.md",
         "Internals" => "internals.md",
     ],
-    sitename="MLJModelRegistry.jl",
+    sitename="MLJModelRegistryTools.jl",
     warnonly = [:cross_references, :missing_docs],
-    repo = Remotes.GitHub("JuliaAI", "MLJModelRegistry.jl"),
+    repo = Remotes.GitHub("JuliaAI", "MLJModelRegistryTools.jl"),
 )
 
 deploydocs(
     devbranch="dev",
     push_preview=false,
-    repo="github.com/JuliaAI/MLJModelRegistry.jl.git",
+    repo="github.com/JuliaAI/MLJModelRegistryTools.jl.git",
 )

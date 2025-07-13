@@ -25,22 +25,22 @@ function clean!(dic, pkg)
     return dic
 end
 
-# develop MLJModelRegistry into the specifified `registry` project:
+# develop MLJModelRegistryTools into the specifified `registry` project:
 function setup(registry)
     ex = quote
         # REMOVE THIS NEXT LINE AFTER TAGGING NEW MLJMODELINTERFACE
         Pkg.develop(path="/Users/anthony/MLJ/MLJModelInterface/")
-        Pkg.develop(path=$ROOT) # MLJModelRegistry
+        Pkg.develop(path=$ROOT) # MLJModelRegistryTools
     end
     future = GenericRegistry.run([], ex; environment=registry)
     fetch(future)
     GenericRegistry.close(future)
 end
 
-# remove MLJModelRegistry from the specifified `registry` project:
+# remove MLJModelRegistryTools from the specifified `registry` project:
 function cleanup(registry)
     ex = quote
-        Pkg.rm("MLJModelRegistry")
+        Pkg.rm("MLJModelRegistryTools")
     end
     future = GenericRegistry.run([], ex; environment=registry)
     fetch(future)
@@ -53,10 +53,10 @@ end
 *Private method.*
 
 Extract the metadata for a package. Returns a `Future` object that must be `fetch`ed to
-get the metadata. See, [`MLJModelRegistry.update`](@ref), which calls this method, for
+get the metadata. See, [`MLJModelRegistryTools.update`](@ref), which calls this method, for
 more details.
 
-Assumes that MLJModelRegistry has been `develop`ed into `registry` if this is non-empty.
+Assumes that MLJModelRegistryTools has been `develop`ed into `registry` if this is non-empty.
 
 """
 function metadata(pkg; registry="", check_traits=true)
@@ -68,12 +68,12 @@ function metadata(pkg; registry="", check_traits=true)
         setup = quote
             # REMOVE THIS NEXT LINE AFTER TAGGING NEW MLJMODELINTERFACE
             Pkg.develop(path="/Users/anthony/MLJ/MLJModelInterface/")
-            Pkg.develop(path=$ROOT) # MLJModelRegistry
+            Pkg.develop(path=$ROOT) # MLJModelRegistryTools
         end
     end
     program = quote
-        import MLJModelRegistry
-        MLJModelRegistry.traits_given_constructor_name(
+        import MLJModelRegistryTools
+        MLJModelRegistryTools.traits_given_constructor_name(
             $pkg,
             check_traits=$check_traits,
         )
@@ -85,7 +85,7 @@ end
 # # PUBLIC METHODS
 
 """
-    MLJModelRegistry.gc()
+    MLJModelRegistryTools.gc()
 
 Remove the metadata associated with any packages that are no longer in the the model
 registry.
@@ -105,7 +105,7 @@ strings, and record this in the MLJ model registry (write it to
 
 Assumes `pkg` is already a dependency in the Julia environment defined at `/registry/` and
 uses the version of `pkg` consistent with the current environment manifest, after
-MLJModelRegistry.jl has been `develop`ed into that environment (it is removed again after
+MLJModelRegistryTools.jl has been `develop`ed into that environment (it is removed again after
 the update). See documentation for details on the registration process.
 
 ```julia-repl
@@ -127,7 +127,7 @@ The metadata dictionary, keyed on models (more precisely, constructors, thereof)
   force latest versions if these are being blocked by other packages.
 
 - `debug=false`: Calling `update` opens a temporary Julia process to extract the trait
-  metadata (see [`MLJModelRegistry.GenericRegistry.run`](@ref)). By default, this process
+  metadata (see [`MLJModelRegistryTools.GenericRegistry.run`](@ref)). By default, this process
   is shut down before rethrowing any exceptions that occurs there. Setting `debug=true`
   will leave the process open, and also block the default suppression of the remote worker
   standard output.
@@ -143,7 +143,7 @@ update(pkg, ::Quiet, registry, check_traits) =
     @suppress _update(pkg, false, registry, check_traits)
 function _update(pkg, debug, registry, check_traits)
     isempty(registry) || setup(registry)
-    future = MLJModelRegistry.metadata(pkg; registry, check_traits)
+    future = MLJModelRegistryTools.metadata(pkg; registry, check_traits)
     metadata = try
         fetch(future)
     catch excptn
@@ -205,7 +205,7 @@ function update(
         batch = pkgs[pos:pos + n - 1]
         @suppress begin
             futures =
-                [MLJModelRegistry.metadata(pkg; registry, check_traits) for pkg in batch]
+                [MLJModelRegistryTools.metadata(pkg; registry, check_traits) for pkg in batch]
             try
                 for (i, f) in enumerate(futures)
                     GenericRegistry.put(batch[i], fetch(f), registry_path())
@@ -226,11 +226,11 @@ function update(
 end
 
 """
-    MLJModelRegistry.get(pkg)
+    MLJModelRegistryTools.get(pkg)
 
 Inspect the model trait metadata recorded in the Model Registry for those models in
 `pkg`. Returns a dictionary keyed on model constructor name. Data is in serialized form;
-see [`MLJModelRegistry.encode_dic`](@ref).
+see [`MLJModelRegistryTools.encode_dic`](@ref).
 
 """
 get(pkg) = GenericRegistry.get(pkg, registry_path())

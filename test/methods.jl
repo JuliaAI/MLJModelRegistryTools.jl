@@ -1,6 +1,6 @@
 using Test
-using MLJModelRegistry
-import MLJModelRegistry.GenericRegistry as R
+using MLJModelRegistryTools
+import MLJModelRegistryTools.GenericRegistry as R
 using Suppressor
 using Random
 using Distributed
@@ -16,7 +16,7 @@ N = nworkers()
             ":load_path" => "Pkg2.Mod2.Model2",
         ),
     )
-    MLJModelRegistry.clean!(dic, "Pkg1")
+    MLJModelRegistryTools.clean!(dic, "Pkg1")
     @test keys(dic) == Set(["Model1"])
 end
 
@@ -36,15 +36,15 @@ end
 
 @testset "metadata" begin
     @suppress begin
-        MLJModelRegistry.setup(registry)
-        future = MLJModelRegistry.metadata("MLJBase"; registry)
+        MLJModelRegistryTools.setup(registry)
+        future = MLJModelRegistryTools.metadata("MLJBase"; registry)
         dic = fetch(future)
         @test dic["Pipeline"][":human_name"] == "static pipeline"
         R.close(future)
 
         # This is just a smoke test of the `check_traits` option, to check it is
         # recognized:
-        future = MLJModelRegistry.metadata(
+        future = MLJModelRegistryTools.metadata(
             "MLJBase";
             registry,
             check_traits=false)
@@ -53,10 +53,10 @@ end
 
         # failure because "Example" is not in `registry`:
         @test_throws(
-            MLJModelRegistry.err_missing_package("Example", registry),
-            MLJModelRegistry.metadata("Example"; registry),
+            MLJModelRegistryTools.err_missing_package("Example", registry),
+            MLJModelRegistryTools.metadata("Example"; registry),
         )
-        MLJModelRegistry.cleanup(registry)
+        MLJModelRegistryTools.cleanup(registry)
     end
 end
 
@@ -64,28 +64,28 @@ setpath(registry)
 
 @testset "update" begin
     @test_throws(
-        MLJModelRegistry.err_invalid_packages(["RoguePkg",], registry),
-        MLJModelRegistry.update(skip=["RoguePkg",]),
+        MLJModelRegistryTools.err_invalid_packages(["RoguePkg",], registry),
+        MLJModelRegistryTools.update(skip=["RoguePkg",]),
     )
     traits_given_model = @test_logs(
-        (:info, MLJModelRegistry.INFO_BE_PATIENT1),
-        MLJModelRegistry.update("MLJBase"),
+        (:info, MLJModelRegistryTools.INFO_BE_PATIENT1),
+        MLJModelRegistryTools.update("MLJBase"),
     )
-    # check that MLJModelRegistry, temporarily added to `registry`, has been removed:
-    @test !("MLJModelRegistry" in R.dependencies(registry))
+    # check that MLJModelRegistryTools, temporarily added to `registry`, has been removed:
+    @test !("MLJModelRegistryTools" in R.dependencies(registry))
 
     @test traits_given_model["Pipeline"][":name"] == "Pipeline"
 
     packages = @test_logs(
         (:info, ),
-        (:info, MLJModelRegistry.INFO_BE_PATIENT10),
-        MLJModelRegistry.update(),
+        (:info, MLJModelRegistryTools.INFO_BE_PATIENT10),
+        MLJModelRegistryTools.update(),
     )
     @test "MLJDecisionTreeInterface" in packages
 end
 
 @testset "get" begin
-    metadata = MLJModelRegistry.get("MLJDecisionTreeInterface")
+    metadata = MLJModelRegistryTools.get("MLJDecisionTreeInterface")
     @test metadata["DecisionTreeClassifier"][":is_pure_julia"] == "`true`"
 end
 
@@ -99,8 +99,8 @@ end
     @assert !("MLJBase" in R.dependencies(registry))
 
     # check that gc removes the associated metadata:
-    MLJModelRegistry.gc()
-    @test isnothing(MLJModelRegistry.get("MLJBase"))
+    MLJModelRegistryTools.gc()
+    @test isnothing(MLJModelRegistryTools.get("MLJBase"))
 end
 
 # check all temporary processes got shut down:

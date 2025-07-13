@@ -42,8 +42,8 @@ Pkg.status()
 #  [bd369af6] Tables v1.12.1
 
 Pkg.activate(temp=true)
-Pkg.add("MLJModelRegistry")
-using MLJModelRegistry.GenericRegistry
+Pkg.add("MLJModelRegistryTools")
+using MLJModelRegistryTools.GenericRegistry
 packages = GenericRegistry.dependencies(env)
 # 2-element Vector{String}:
 #  "Tables"

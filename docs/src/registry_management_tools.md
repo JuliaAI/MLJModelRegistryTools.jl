@@ -3,17 +3,19 @@
 ## Overview
 
 ```@docs
-MLJModelRegistry
+MLJModelRegistryTools
 ```
 
 ## Methods
 
+- [`setpath`](@ref)
 - [`update`](@ref)
-- [`MLJModelRegistry.gc`](@ref)
-- [`MLJModelRegistry.get`](@ref)
+- [`MLJModelRegistryTools.gc`](@ref)
+- [`MLJModelRegistryTools.get`](@ref)
 
 ```@docs
+setpath
 update
-MLJModelRegistry.gc
-MLJModelRegistry.get
+MLJModelRegistryTools.gc
+MLJModelRegistryTools.get
 ```

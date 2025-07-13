@@ -9,9 +9,9 @@ const ENVIRONMENT  = joinpath(@__DIR__, "_dummy_environment")
 
 # Anthony's local alternative for debugging:
 # const ENVIRONMENT =
-#    "/Users/anthony/GoogleDrive/Julia/MLJ/MLJModelRegistry/test/_dummy_environment"
+#    "/Users/anthony/GoogleDrive/Julia/MLJ/MLJModelRegistryTools/test/_dummy_environment"
 
-import MLJModelRegistry.GenericRegistry as R
+import MLJModelRegistryTools.GenericRegistry as R
 
 @testset "`GenericRegistry.run` and `GenericRegistry.close`" begin
     n = nprocs()
