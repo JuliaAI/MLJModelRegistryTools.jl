@@ -120,7 +120,7 @@ The metadata dictionary, keyed on models (more precisely, constructors, thereof)
 
 !!! warning
 
-    Advanced options are intented primarily for diagnostic purposes.
+    Advanced options are intended primarily for diagnostic purposes.
 
 - `manifest=true`: Set to `false` to ignore the registry environment manifest and instead
   add only the specified packages to a new temporary environment. Useful to temporarily
