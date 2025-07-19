@@ -2,7 +2,7 @@
     GenericRegistry
 
 Module providing basic tools to manage a *package registry*, by which is meant a package
-environment, together with "package metata", in the form of a dictionary of TOML-parsable
+environment, together with "package metadata", in the form of a dictionary of TOML-parsable
 values, keyed on the environment's package dependencies, which is stored in a TOML
 file. (This file is called Metadata.toml and is located in the same folder as environment
 Project.toml file.) Not to be confused with a package registry in the sense of the
@@ -191,7 +191,7 @@ close(future) = rmprocs(future.where)
 """
     GenericRegistry.put(pkg, value, environment)
 
-In the metata dictionary associated with specified package environment, assign `value` to
+In the metadata dictionary associated with specified package environment, assign `value` to
 the key `pkg`.
 
 """

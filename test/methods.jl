@@ -20,7 +20,7 @@ N = nworkers()
     @test keys(dic) == Set(["Model1"])
 end
 
-# build a dummmy registry:
+# build a dummy registry:
 registry = joinpath(tempdir(), randstring(20))
 mkpath(registry)
 project_string =
