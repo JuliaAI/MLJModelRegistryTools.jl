@@ -1,6 +1,6 @@
 # MLJModelRegistryTools.jl
 
-Home of the MLJ Model Registry and tools to maintain it
+Tools to managage the [MLJ](https://juliaml.ai) Model Registry
 
 [![Build Status](https://github.com/JuliaAI/MLJModelRegistryTools.jl/workflows/CI/badge.svg)](https://github.com/JuliaAI/MLJModelRegistryTools.jl/actions)
 [![codecov](https://codecov.io/gh/JuliaAI/MLJModelRegistryTools.jl/graph/badge.svg?token=IffAGupUL3)](https://codecov.io/gh/JuliaAI/MLJModelRegistryTools.jl)
