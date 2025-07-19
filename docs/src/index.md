@@ -16,3 +16,8 @@ distribution.
 The model registry itself is currently hosted by MLJModels.jl (part of the standard MLJ
 distribution) and lives in [this
 folder](https://github.com/JuliaAI/MLJModels.jl/tree/master/src/registry).
+
+## Contents
+
+- [Registry management tools](@ref)
+- [Internals](@ref)

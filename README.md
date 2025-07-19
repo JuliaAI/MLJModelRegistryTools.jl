@@ -7,7 +7,6 @@ Home of the MLJ Model Registry and tools to maintain it
 [![Docs](https://img.shields.io/badge/docs-dev-blue.svg)](https://juliaai.github.io/MLJModelRegistryTools.jl/dev/)
 [![Docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliaai.github.io/MLJModelRegistryTools.jl/stable/)
 
-What is this repository for? See
-[here](https://juliaai.github.io/MLJModelRegistryTools.jl/stable/#What's-this-repository-for?).
+Documentation is [here](https://juliaai.github.io/MLJModelRegistryTools.jl/stable/).
 
 
