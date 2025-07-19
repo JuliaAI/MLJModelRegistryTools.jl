@@ -14,7 +14,7 @@ Suppressor = "fd094767-a336-5f1f-9728-57cf17d0bbfb"
 [compat]
 Distributed = "1.11.0"
 InteractiveUtils = "1.11.0"
-MLJModelInterface = "1.11.1"
+MLJModelInterface = "1.12"
 MLJModels = "0.17"
 OrderedCollections = "1.8"
 Pkg = "1.11.0"
