@@ -64,6 +64,9 @@ jobs:
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
       - run: |
           julia --project=docs -e '
+            using Pkg
+            Pkg.develop(PackageSpec(path=pwd()))
+            Pkg.instantiate()
             using Documenter: DocMeta, doctest
             using MLJModelRegistry
             DocMeta.setdocmeta!(MLJModelRegistry, :DocTestSetup, :(using MLJModelRegistry); recursive=true)
