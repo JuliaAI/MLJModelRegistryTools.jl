@@ -51,7 +51,8 @@ for converting leaves are:
 
 2. If it's an `AbstractString`, apply `string` function (e.g, to remove `SubString`s).
 
-3. In all other cases, except `AbstractArray`s, wrap in single quotes, as in sum -> "`sum`".
+3. In all other cases, except `AbstractArray`s, first wrap in single quotes, as in sum -> "\`sum\`".
+
 4. Replace any `#` character in the application of Rule 3 with `_` (to handle `gensym` names)
 
 5. For an `AbstractVector`, broadcast the preceding Rules over its elements.
