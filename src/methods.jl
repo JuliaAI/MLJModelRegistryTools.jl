@@ -66,9 +66,10 @@ function metadata(pkg; registry="", check_traits=true)
         setup=()
     else
         setup = quote
-            # REMOVE THIS NEXT LINE AFTER TAGGING NEW MLJMODELINTERFACE
-            Pkg.develop(path="/Users/anthony/MLJ/MLJModelInterface/")
-            Pkg.develop(path=$ROOT) # MLJModelRegistryTools
+            # TODO: replace Line 1 with Line 2 after MLJModelRegistry is registered at
+            # General:
+            Pkg.develop(path=$ROOT) # Line 1
+            # Pkg.add(MLJModelRegistryTools) # Line 2
         end
     end
     program = quote
