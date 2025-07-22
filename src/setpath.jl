@@ -4,7 +4,7 @@ const ERR_REGISTRY_PATH = ErrorException(
     "No path to the registry has been set. Run "*
         "`setpath(path)`, where `path` is the path to the registry in your local "*
         "MLJModels.jl clone. That is, do something like "*
-        "`setpath(\"~/MyPkgs/MLJModels/registry\")`. "
+        "`setpath(\"~/MyPkgs/MLJModels/src/registry\")`. "
 )
 
 # for accessing or changing the location of the registry (initially empty):
