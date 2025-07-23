@@ -28,9 +28,8 @@ end
 # develop MLJModelRegistryTools into the specifified `registry` project:
 function setup(registry)
     ex = quote
-        # TODO: replace Line 1 with Line 2 after MLJModelRegistry is registered at General:
-        Pkg.develop(path=$ROOT) # Line 1
-        # Pkg.add(MLJModelRegistryTools) # Line 2
+        # Pkg.develop(path=$ROOT)
+        Pkg.add("MLJModelRegistryTools")
     end
     future = GenericRegistry.run([], ex; environment=registry)
     fetch(future)
@@ -66,10 +65,8 @@ function metadata(pkg; registry="", check_traits=true)
         setup=()
     else
         setup = quote
-            # TODO: replace Line 1 with Line 2 after MLJModelRegistry is registered at
-            # General:
-            Pkg.develop(path=$ROOT) # Line 1
-            # Pkg.add(MLJModelRegistryTools) # Line 2
+            # Pkg.develop(path=$ROOT)
+            Pkg.add("MLJModelRegistryTools")
         end
     end
     program = quote
