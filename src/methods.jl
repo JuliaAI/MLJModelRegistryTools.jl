@@ -11,8 +11,8 @@ err_invalid_packages(skip, env) = ArgumentError(
     "\"$env\". "
 )
 
-const INFO_BE_PATIENT1 = "Be patient. This could take a minute or so... "
-const INFO_BE_PATIENT10 = "Be patient. This could take ten minutes or so..."
+const INFO_BE_PATIENT1 = "Be patient. This could take a minute or so ... "
+const INFO_BE_PATIENT10 = "Be patient. This could take ten minutes or so ..."
 
 
 # # HELPERS
@@ -28,9 +28,8 @@ end
 # develop MLJModelRegistryTools into the specifified `registry` project:
 function setup(registry)
     ex = quote
-        # TODO: replace Line 1 with Line 2 after MLJModelRegistry is registered at General:
-        Pkg.develop(path=$ROOT) # Line 1
-        # Pkg.add(MLJModelRegistryTools) # Line 2
+        # Pkg.develop(path=$ROOT)
+        Pkg.add("MLJModelRegistryTools")
     end
     future = GenericRegistry.run([], ex; environment=registry)
     fetch(future)
@@ -66,9 +65,8 @@ function metadata(pkg; registry="", check_traits=true)
         setup=()
     else
         setup = quote
-            # REMOVE THIS NEXT LINE AFTER TAGGING NEW MLJMODELINTERFACE
-            Pkg.develop(path="/Users/anthony/MLJ/MLJModelInterface/")
-            Pkg.develop(path=$ROOT) # MLJModelRegistryTools
+            # Pkg.develop(path=$ROOT)
+            Pkg.add("MLJModelRegistryTools")
         end
     end
     program = quote
@@ -194,18 +192,23 @@ function update(
         issubset(skip, allpkgs) || throw(err_invalid_packages(skip, registry))
         @suppress setup(registry)
     end
-    pkgs = setdiff(allpkgs, skip)
-    N = length(pkgs)
-    pos = 1
+    pkgs = setdiff(allpkgs, skip) |> sort
+    pkg_set = OrderedSet(pkgs)
+
     @info "Processing up to $nworkers packages at a time. "
     @info INFO_BE_PATIENT10
-    while N ≥ 1
-        print("\rPackages remaining: $N ")
-        n = min(nworkers, N)
-        batch = pkgs[pos:pos + n - 1]
+    while !isempty(pkg_set)
+        print("\rPackages remaining: $(length(pkgs)) ")
+        n = min(nworkers, length(pkg_set))
+        batch = [pop!(pkg_set) for _ in 1:n]
         @suppress begin
-            futures =
-                [MLJModelRegistryTools.metadata(pkg; registry, check_traits) for pkg in batch]
+            futures = [
+                MLJModelRegistryTools.metadata(
+                    pkg;
+                    registry,
+                    check_traits,
+                ) for pkg in batch
+                    ]
             try
                 for (i, f) in enumerate(futures)
                     GenericRegistry.put(batch[i], fetch(f), registry_path())
@@ -217,7 +220,6 @@ function update(
             end
             debug || GenericRegistry.close.(futures)
         end
-        N -= n
     end
     isempty(registry) || @suppress cleanup(registry)
     gc()
