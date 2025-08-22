@@ -18,7 +18,9 @@ Module providing tools for managing the MLJ Model Registry. To modify the regist
   your MLJModels.jl clone, using `setpath(path_to_registry)`, as in
   `setpath("MyPkgs/MLJModels.jl/src/registry")`.
 
-- To add or update the metadata associated with a package, run [`update(pkg)`](@ref).
+- To add or update the metadata associated with a package, run
+  [`update(pkg)`](@ref). Ensure that every model provided by the packge appears as a key
+  in the returned value. Omissions may indicate a bad `load_path`.
 
 - Assuming this is successful, update the metadata for *all* packages in the registry
   by running [`update()`](@ref).
