@@ -3,6 +3,11 @@
 
 Module providing tools for managing the MLJ Model Registry. To modify the registry:
 
+- Make sure the MLJModelRegistryTools.jl `[compat]` entry for MLJModels is up to date. If
+  not you will need to update it. (Generally you cannot update the model registry and make
+  breaking releases of MLJModels at the same time. If this is absolutely necessary, you
+  will need to locally `dev` both packages.)
+
 - Create a local clone of [MLJModels.jl](https://github.com/JuliaAI/MLJModels.jl), which
   hosts the registry. After making changes, you will be making a MLJModels.jl pull
   request.
