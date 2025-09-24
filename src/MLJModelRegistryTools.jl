@@ -25,7 +25,7 @@ Module providing tools for managing the MLJ Model Registry. To modify the regist
   `MLJRegistryTools.get("MLJBase")`, to see the MLJBase.jl models.
 
 - To add or update the metadata associated with a package, run [`update(pkg)`](@ref), as
-  in `update("MLJTransforms"). Ensure that every model provided by the packge appears as a
+  in `update("MLJTransforms"). Ensure that every model provided by the package appears as a
   key in the returned value. Omissions may indicate a bad `load_path`.
 
 - Assuming this is successful, update the metadata for *all* packages in the registry
