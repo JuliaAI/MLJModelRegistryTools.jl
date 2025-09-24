@@ -3,6 +3,11 @@
 
 Module providing tools for managing the MLJ Model Registry. To modify the registry:
 
+- Make sure the MLJModelRegistryTools.jl `[compat]` entry for MLJModels is up to date. If
+  not you will need to update it. (Generally you cannot update the model registry and make
+  breaking releases of MLJModels at the same time. If this is absolutely necessary, you
+  will need to locally `dev` both packages.)
+
 - Create a local clone of [MLJModels.jl](https://github.com/JuliaAI/MLJModels.jl), which
   hosts the registry. After making changes, you will be making a MLJModels.jl pull
   request.
@@ -16,9 +21,12 @@ Module providing tools for managing the MLJ Model Registry. To modify the regist
 
 - Point the `MLJModelRegistryTools` module to the location of the registry itself within
   your MLJModels.jl clone, using `setpath(path_to_registry)`, as in
-  `setpath("MyPkgs/MLJModels.jl/src/registry")`.
+  `setpath("MyPkgs/MLJModels.jl/src/registry")`. To check this worked, try
+  `MLJRegistryTools.get("MLJBase")`, to see the MLJBase.jl models.
 
-- To add or update the metadata associated with a package, run [`update(pkg)`](@ref).
+- To add or update the metadata associated with a package, run [`update(pkg)`](@ref), as
+  in `update("MLJTransforms"). Ensure that every model provided by the package appears as a
+  key in the returned value. Omissions may indicate a bad `load_path`.
 
 - Assuming this is successful, update the metadata for *all* packages in the registry
   by running [`update()`](@ref).
