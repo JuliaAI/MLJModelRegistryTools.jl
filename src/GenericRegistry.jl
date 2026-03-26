@@ -110,7 +110,7 @@ end
 # # METHODS
 
 """
-    GenericRegistry.run([setup,] packages, program; environment=nothing)
+    GenericRegistry.run([setup,] packages, program; environment="")
 
 Assuming a package `environment` path is specified, do the following in a new Julia
 process:
@@ -136,13 +136,13 @@ If `environment` is unspecified, then a fresh temporary environment is activated
 packages listed in `packages` are manually added between Steps 2 and 3 above.
 
 """
-function run(setup, pkgs, program; environment=nothing)
+function run(setup, pkgs, program; environment="")
     pkgs isa Vector || (pkgs = [pkgs,])
     imports =  [:(import $(Symbol(pkg))) for pkg in pkgs]
     ex = quote
         using Pkg
     end
-    if isnothing(environment)
+    if isempty(environment)
         push!(
             ex.args,
             quote
@@ -158,7 +158,7 @@ function run(setup, pkgs, program; environment=nothing)
         )
     end
     push!(ex.args, quote $setup end)
-    if isnothing(environment)
+    if isempty(environment)
         additions = [:(Pkg.add($pkg)) for pkg in pkgs]
         push!(
             ex.args,

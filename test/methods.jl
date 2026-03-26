@@ -76,12 +76,23 @@ setpath(registry)
 
     @test traits_given_model["Pipeline"][":name"] == "Pipeline"
 
-    packages = @test_logs(
-        (:info, ),
-        (:info, MLJModelRegistryTools.INFO_BE_PATIENT10),
-        MLJModelRegistryTools.update(),
-    )
-    @test "MLJDecisionTreeInterface" in packages
+    dev = ENV["DEVELOPING_MLJ_MODEL_REGISTRY_TOOLS"] == "true" ? true : false
+    if !dev
+        packages = @test_logs(
+            (:info, ),
+            (:info, MLJModelRegistryTools.INFO_BE_PATIENT10),
+            MLJModelRegistryTools.update(),
+        )
+        @test "MLJDecisionTreeInterface" in packages
+    else
+        packages = @test_logs(
+            (:info, ),
+            (:info, ),
+            (:info, MLJModelRegistryTools.INFO_BE_PATIENT10),
+            MLJModelRegistryTools.update(),
+        )
+        @test "MLJDecisionTreeInterface" in packages
+    end
 end
 
 @testset "get" begin

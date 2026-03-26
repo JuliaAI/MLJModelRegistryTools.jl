@@ -1,6 +1,10 @@
 """
     MLJModelRegistryTools
 
+!!! note
+
+    Issues around packages in the MLJ model registry that use PythonCall necessitate `update` workarounds. See [https://github.com/JuliaAI/MLJModelRegistryTools.jl/issues/10](https://github.com/JuliaAI/MLJModelRegistryTools.jl/issues/10).
+
 Module providing tools for managing the MLJ Model Registry. To modify the registry:
 
 - Make sure the MLJModelRegistryTools.jl `[compat]` entry for MLJModels is up to date. If

@@ -14,6 +14,13 @@ err_invalid_packages(skip, env) = ArgumentError(
 const INFO_BE_PATIENT1 = "Be patient. This could take a minute or so ... "
 const INFO_BE_PATIENT10 = "Be patient. This could take ten minutes or so ..."
 
+function warn_developing()
+        dev = ENV["DEVELOPING_MLJ_MODEL_REGISTRY_TOOLS"] == "true" ? true : false
+        dev && @info "Registry tools working in development mode. Set "*
+            "`ENV[\"DEVELOPING_MLJ_MODEL_REGISTRY_TOOLS\"] = \"false\"` "*
+            "to change this. "
+end
+
 
 # # HELPERS
 
@@ -64,9 +71,13 @@ function metadata(pkg; registry="", check_traits=true)
             throw(err_missing_package(pkg, registry))
         setup=()
     else
+        dev = ENV["DEVELOPING_MLJ_MODEL_REGISTRY_TOOLS"] == "true" ? true : false
         setup = quote
-            # Pkg.develop(path=$ROOT)
-            Pkg.add("MLJModelRegistryTools")
+            if $dev
+                Pkg.develop(path=$ROOT)
+            else
+                Pkg.add("MLJModelRegistryTools")
+            end
         end
     end
     program = quote
@@ -103,8 +114,10 @@ strings, and record this in the MLJ model registry (write it to
 
 Assumes `pkg` is already a dependency in the Julia environment defined at `/registry/` and
 uses the version of `pkg` consistent with the current environment manifest, after
-MLJModelRegistryTools.jl has been `develop`ed into that environment (it is removed again after
-the update). See documentation for details on the registration process.
+MLJModelRegistryTools.jl has been `add`ed into that environment (it is removed again after
+the update). (To `dev` the tools instead, you need to set
+`ENV["DEVELOPING_MLJ_MODEL_REGISTRY_TOOLS"] = "true"`.) See documentation for details on
+the registration process.
 
 ```julia-repl
 julia> update("MLJDecisionTreeInterface")
@@ -132,6 +145,7 @@ The metadata dictionary, keyed on models (more precisely, constructors, thereof)
 
 """
 function update(pkg; debug=false, manifest=true, check_traits=true)
+    warn_developing()
     registry = manifest ? registry_path() : ""
     @info INFO_BE_PATIENT1
     update(pkg, debug ? Loud() : Quiet(), registry, check_traits)
@@ -186,6 +200,7 @@ function update(
     manifest=true,
     check_traits=true,
     )
+    warn_developing()
     registry = manifest ? registry_path() : ""
     allpkgs = GenericRegistry.dependencies(registry_path())
     if !isempty(registry)
