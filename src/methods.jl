@@ -15,7 +15,7 @@ const INFO_BE_PATIENT1 = "Be patient. This could take a minute or so ... "
 const INFO_BE_PATIENT10 = "Be patient. This could take ten minutes or so ..."
 
 function warn_developing()
-        dev = ENV["DEVELOPING_MLJ_MODEL_REGISTRY_TOOLS"] == "true" ? true : false
+        dev = parse(get(ENV, "DEVELOPING_MLJ_MODEL_REGISTRY_TOOLS", "false"))
         dev && @info "Registry tools working in development mode. Set "*
             "`ENV[\"DEVELOPING_MLJ_MODEL_REGISTRY_TOOLS\"] = \"false\"` "*
             "to change this. "
@@ -71,7 +71,7 @@ function metadata(pkg; registry="", check_traits=true)
             throw(err_missing_package(pkg, registry))
         setup=()
     else
-        dev = ENV["DEVELOPING_MLJ_MODEL_REGISTRY_TOOLS"] == "true" ? true : false
+        dev = parse(Bool, get(ENV, "DEVELOPING_MLJ_MODEL_REGISTRY_TOOLS", "false"))
         setup = quote
             if $dev
                 Pkg.develop(path=$ROOT)
