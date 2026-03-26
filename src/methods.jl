@@ -32,7 +32,7 @@ function clean!(dic, pkg)
     return dic
 end
 
-# develop MLJModelRegistryTools into the specifified `registry` project:
+# develop MLJModelRegistryTools into the specified `registry` project:
 function setup(registry)
     ex = quote
         # Pkg.develop(path=$ROOT)
@@ -43,7 +43,7 @@ function setup(registry)
     GenericRegistry.close(future)
 end
 
-# remove MLJModelRegistryTools from the specifified `registry` project:
+# remove MLJModelRegistryTools from the specified `registry` project:
 function cleanup(registry)
     ex = quote
         Pkg.rm("MLJModelRegistryTools")

@@ -25,7 +25,7 @@ standard library, `Pkg`.
   execute a Julia expression there; results are returned as `Future` objects, to allow
   asynchronous `run` calls. Useful for generating metadata about a package.
 
-- [`GenericRegistry.close(future)`](@ref): Shut down the process intitiated by the `run`
+- [`GenericRegistry.close(future)`](@ref): Shut down the process initiated by the `run`
   call that returned `future` (after calling `fetch(future)` to get the result of
   evaluation).
 
