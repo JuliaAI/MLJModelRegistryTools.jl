@@ -76,7 +76,7 @@ setpath(registry)
 
     @test traits_given_model["Pipeline"][":name"] == "Pipeline"
 
-    dev = ENV["DEVELOPING_MLJ_MODEL_REGISTRY_TOOLS"] == "true" ? true : false
+    dev = parse(Bool, get(ENV, "DEVELOPING_MLJ_MODEL_REGISTRY_TOOLS", "false"))
     if !dev
         packages = @test_logs(
             (:info, ),
