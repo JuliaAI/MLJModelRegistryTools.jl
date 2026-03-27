@@ -1,4 +1,4 @@
-# Remote methods are methods called on remote processes for the purpose of when extacting
+# Remote methods are methods called on remote processes for the purpose of when extracting
 # model metadata for a package
 
 
