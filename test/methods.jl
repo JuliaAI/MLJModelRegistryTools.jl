@@ -32,7 +32,7 @@ project = joinpath(registry, "Project.toml")
 manifest = joinpath(registry, "Manifest.toml")
 open(project, "w") do file
     write(file, project_string)
-end
+end;
 
 @testset "metadata" begin
     @suppress begin
