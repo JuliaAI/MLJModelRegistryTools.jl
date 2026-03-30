@@ -3,7 +3,8 @@
 
 !!! note
 
-    Issues around packages in the MLJ model registry that use PythonCall necessitate `update` workarounds. See [https://github.com/JuliaAI/MLJModelRegistryTools.jl/issues/10](https://github.com/JuliaAI/MLJModelRegistryTools.jl/issues/10).
+   If a model-providing package has compat bounds that are blocking other packages from
+   loading with latest versions, see the "Hacks" section below for a workaround.
 
 Module providing tools for managing the MLJ Model Registry. To modify the registry:
 
@@ -65,6 +66,19 @@ register the new models may be rejected.
     if you call `update()` to update all package metadata (or call
     [`MLJModelRegistryTools.gc()`](@ref)) the metadata for all orphaned packages is
     removed.
+
+# Hacks
+
+By default, the `update` command instantiates the project pointed to by `setpath` and uses
+the resulting Manifest.toml file to determine versions of the model-providing packages for
+which metadata is to be updated. If a particular package, "MyPkg" say, is blocking latest
+versions of the others, you can temporarily remove it from the project, run `update()`,
+return "MyPkg" to the project and run `update("MyPkg", manifest=false)` to update the
+metadata for the latest "MyPkg".
+
+If python compatibilities are the issue, you can leave the julia-wrapping-python packages
+in the project, but run `update(skip=[<julia-wrapping-python packages>])` and
+`update("PyPkg", manifest=false)`, for each julia-python package "PyPkg".
 
 """
 module MLJModelRegistryTools

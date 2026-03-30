@@ -62,7 +62,7 @@ Extract the metadata for a package. Returns a `Future` object that must be `fetc
 get the metadata. See, [`MLJModelRegistryTools.update`](@ref), which calls this method, for
 more details.
 
-Assumes that MLJModelRegistryTools has been `develop`ed into `registry` if this is non-empty.
+Assumes that MLJModelRegistryTools has been `add`ed into `registry` if this is non-empty.
 
 """
 function metadata(pkg; registry="", check_traits=true)
