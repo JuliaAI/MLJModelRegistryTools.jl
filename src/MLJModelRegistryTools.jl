@@ -76,7 +76,7 @@ versions of the others, you can temporarily remove it from the project, run `upd
 return "MyPkg" to the project and run `update("MyPkg", manifest=false)` to update the
 metadata for the latest "MyPkg".
 
-If python compatabilities are the issue, you can leave the julia-wrapping-python packages
+If python compatibilities are the issue, you can leave the julia-wrapping-python packages
 in the project, but run `update(skip=[<julia-wrapping-python packages>])` and
 `update("PyPkg", manifest=false)`, for each julia-python package "PyPkg".
 
