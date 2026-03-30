@@ -5,4 +5,5 @@ MLJModelRegistryTools = "0a96183e-380b-4aa6-be10-c555140810f2"
 
 [compat]
 Documenter = "1"
+DocumenterInterLinks = "1.1.0"
 julia = "1.10"
