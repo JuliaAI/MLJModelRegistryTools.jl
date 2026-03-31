@@ -3,8 +3,8 @@
 
 !!! note
 
-   If a model-providing package has compat bounds that are blocking other packages from
-   loading with latest versions, see the "Hacks" section below for a workaround.
+    If a model-providing package has compat bounds that are blocking other packages from
+    loading with latest versions, see the "Hacks" section below for a workaround.
 
 Module providing tools for managing the MLJ Model Registry. To modify the registry:
 
