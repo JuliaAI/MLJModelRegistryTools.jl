@@ -84,7 +84,7 @@ api_pkg(M) = split(MLJModelInterface.load_path(M), '.') |> first
     MLJModelRegistryTools.traits_given_constructor_name(pkg; check_traits=true)
 
 Build and return a dictionary of model metadata as follows: The keys consist of the names
-of constructors of any `model` object subtyping `MLJModelInterface.Model` wherever the
+of constructors of any concrete type subtyping `MLJModelInterface.Model` wherever the
 package providing the model implementation (assumed to be imported) is `pkg`. This is the
 package appearing as the root of `MLJModelInterface.load_path(model)`. The values are
 corresponding dictionaries of traits, keyed on trait name.
