@@ -7,5 +7,10 @@ function __init__()
             "of MLJModelRegistryTools.jl get applied during update, not the dev "*
             "versions. "
     end
+    @info "Remember, if a new model is added to the model registry, or migrated from one "*
+        "package to another, then you will need to make a pull request to MLJ.jl to "*
+        "update the "*
+        "[model descriptors](https://github.com/JuliaAI/MLJ.jl/blob/dev/docs/"*
+        "ModelDescriptors.toml) used to generate the MLJ user manual. "
     global REGISTRY_PATH=Ref("")
 end
