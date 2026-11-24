@@ -20,8 +20,8 @@ Module providing tools for managing the MLJ Model Registry. To modify the regist
 - If needed, use Julia's package manager to add or remove items from the list of
   registered packages in the environment "/src/registry/", inside your MLJModels.jl
   clone. Follow the protocol below. In any case, you should update and locally instantiate
-  this environment, and check for compatability issues creating blocks to using the latest
-  veresions of all packages simultaneously. Such blocks have been historically tolerated
+  this environment, and check for compatibility issues creating blocks to using the latest
+  versions of all packages simultaneously. Such blocks have been historically tolerated
   on a temporary basis but must be tracked.
 
 - In a new Julia session with MLJModelRegistryTools.jl installed, run `using
