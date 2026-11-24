@@ -9,9 +9,9 @@
 Module providing tools for managing the MLJ Model Registry. To modify the registry:
 
 - Make sure the MLJModelRegistryTools.jl `[compat]` entry for MLJModels is up to date. If
-  not you will need to update it. (Generally you cannot update the model registry and make
+  not you will need to update it. (Generally one doesn't update the model registry and make
   breaking releases of MLJModels at the same time. If this is absolutely necessary, you
-  will need to locally `dev` both packages.)
+  will need to locally `dev` both MLJModelRegistryTools.jl and MLJModels.jl.)
 
 - Create a local clone of [MLJModels.jl](https://github.com/JuliaAI/MLJModels.jl), which
   hosts the registry. After making changes, you will be making a MLJModels.jl pull
@@ -19,7 +19,10 @@ Module providing tools for managing the MLJ Model Registry. To modify the regist
 
 - If needed, use Julia's package manager to add or remove items from the list of
   registered packages in the environment "/src/registry/", inside your MLJModels.jl
-  clone. Follow the protocol below.
+  clone. Follow the protocol below. In any case, you should update and locally instantiate
+  this environment, and check for compatability issues creating blocks to using the latest
+  veresions of all packages simultaneously. Such blocks have been historically tolerated
+  on a temporary basis but must be tracked.
 
 - In a new Julia session with MLJModelRegistryTools.jl installed, run `using
   MLJModelRegistryTools` to make the management tools available.
@@ -38,6 +41,12 @@ Module providing tools for managing the MLJ Model Registry. To modify the regist
 
 - When satisfied, commit your changes to the clone and make a pull request to the
   MLJModels.jl repository that you cloned.
+
+- After the pull request has been merged, and if a new model has been added to the model
+  registry, or migrated from one package to another, then a new pull request to MLJ.jl is
+  required, to update the [model
+  descriptors](https://github.com/JuliaAI/MLJ.jl/blob/dev/docs/ModelDescriptors.toml) used
+  to generate the MLJ user manual. "
 
 !!! important
 
